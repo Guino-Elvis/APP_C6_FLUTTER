@@ -1,0 +1,17 @@
+server:
+  port: 8085
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/Guino-Elvis/APP_C6_FLUTTER.git
+          search-paths: config-data
+          default-label: main
+  security:
+    user:
+      name: root
+      password: s3cr3t
+  
