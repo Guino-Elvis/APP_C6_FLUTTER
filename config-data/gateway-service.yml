@@ -29,7 +29,7 @@ spring:
         - id: asistencia-service
           uri: lb://asistencia-service
           predicates:
-            - Path=/asistencia/**,/notificacion/**  
+            - Path=/asistencia/**,/notificacion/**,/evento/**  
         - id: auth-service
           uri: lb://auth-service
           predicates:
