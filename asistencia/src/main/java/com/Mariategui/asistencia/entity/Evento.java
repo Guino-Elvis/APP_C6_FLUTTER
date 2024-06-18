@@ -15,6 +15,7 @@ public class Evento {
     private String nombre;
     private Date fecha_inicio;
     private Date fecha_fin;
+    private String foto;
     private Integer userId;
     @Transient
     private AuthUser authUser;
