@@ -13,6 +13,7 @@ public class Evento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String nombre;
+    private String tipo;
     private Date fecha_inicio;
     private Date fecha_fin;
     private String foto;

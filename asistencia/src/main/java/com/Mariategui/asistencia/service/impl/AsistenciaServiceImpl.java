@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 
 import com.Mariategui.asistencia.dto.AuthUser;
 import com.Mariategui.asistencia.entity.Asistencia;
+import com.Mariategui.asistencia.entity.AsistenciaDetalle;
+import com.Mariategui.asistencia.entity.Evento;
 import com.Mariategui.asistencia.feign.AuthUserFeign;
 import com.Mariategui.asistencia.repository.AsistenciaRepository;
 import com.Mariategui.asistencia.service.AsistenciaService;
@@ -18,6 +20,9 @@ public class AsistenciaServiceImpl implements AsistenciaService {
 
     @Autowired
     private AuthUserFeign authUserFeign;
+
+    @Autowired
+    private EventoServiceImpl eventoService;
 
     @Autowired
     private AsistenciaRepository asistenciaRepository;
@@ -39,24 +44,31 @@ public class AsistenciaServiceImpl implements AsistenciaService {
 
     @Override
     public Optional<Asistencia> listarPorId(Integer id) {
-        // Obtener la asistencia de la base de datos
-        Asistencia asistencia = asistenciaRepository.findById(id).orElse(null);
+        Optional<Asistencia> asistenciaOptional = asistenciaRepository.findById(id);
 
-        if (asistencia != null) {
+        if (asistenciaOptional.isPresent()) {
+            Asistencia asistencia = asistenciaOptional.get();
+            Optional<Evento> eventoOptional = eventoService.listarPorId(asistencia.getEvento().getId());
 
-            AuthUser authUser = authUserFeign.listById(asistencia.getUserId()).getBody();
+            if (eventoOptional.isPresent()) {
+                Evento evento = eventoOptional.get();
+                List<AsistenciaDetalle> asistenciaDetalles = asistencia.getDetalle().stream().map(asistenciaDetalle -> {
+                    AuthUser authUser = authUserFeign.listById(asistenciaDetalle.getUserId()).getBody();
+                    asistenciaDetalle.setAuthUser(authUser);
+                    return asistenciaDetalle;
+                }).collect(Collectors.toList());
 
-            if (authUser != null) {
-                asistencia.setAuthUser(authUser);
+                asistencia.setDetalle(asistenciaDetalles);
+                asistencia.setEvento(evento);
             }
+            return Optional.of(asistencia);
+        } else {
+            return Optional.empty();
         }
-
-        return Optional.ofNullable(asistencia);
     }
 
     @Override
     public void eliminarPorId(Integer id) {
         asistenciaRepository.deleteById(id);
     }
-
 }
