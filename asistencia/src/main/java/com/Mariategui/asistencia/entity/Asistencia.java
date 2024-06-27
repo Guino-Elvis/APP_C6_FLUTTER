@@ -1,6 +1,8 @@
 package com.Mariategui.asistencia.entity;
 
 import jakarta.persistence.*;
+
+import java.sql.Date;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -12,7 +14,7 @@ public class Asistencia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String fecha;
+    private Date fecha;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "evento_id")
