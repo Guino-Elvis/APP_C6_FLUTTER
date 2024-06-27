@@ -44,27 +44,31 @@ public class AsistenciaServiceImpl implements AsistenciaService {
 
     @Override
     public Optional<Asistencia> listarPorId(Integer id) {
-        Optional<Asistencia> asistenciaOptional = asistenciaRepository.findById(id);
+        // Cambio en la asignación de variable
+        Asistencia asistencia = asistenciaRepository.findById(id).orElse(null);
 
-        if (asistenciaOptional.isPresent()) {
-            Asistencia asistencia = asistenciaOptional.get();
-            Optional<Evento> eventoOptional = eventoService.listarPorId(asistencia.getEvento().getId());
+        if (asistencia != null) {
+            // Cambio en la obtención del horario
+            Evento evento = eventoService.listarPorId(asistencia.getEvento().getId()).orElse(null);
 
-            if (eventoOptional.isPresent()) {
-                Evento evento = eventoOptional.get();
-                List<AsistenciaDetalle> asistenciaDetalles = asistencia.getDetalle().stream().map(asistenciaDetalle -> {
-                    AuthUser authUser = authUserFeign.listById(asistenciaDetalle.getUserId()).getBody();
-                    asistenciaDetalle.setAuthUser(authUser);
-                    return asistenciaDetalle;
-                }).collect(Collectors.toList());
-
+            if (evento != null) {
+                List<AsistenciaDetalle> asistenciaDetalles = asistencia.getDetalle().stream()
+                        .map(asistenciaDetalle -> {
+                            System.out.println(asistenciaDetalle.toString());
+                            System.out.println("Antes de la petición");
+                            // Cambio en la obtención del alumno
+                            AuthUser authUser = authUserFeign.listById(asistenciaDetalle.getUserId()).getBody();
+                            System.out.println("Después de la petición");
+                            System.out.println(authUser.toString());
+                            System.out.println(authUser.getName());
+                            asistenciaDetalle.setAuthUser(authUser);
+                            return asistenciaDetalle;
+                        }).collect(Collectors.toList());
                 asistencia.setDetalle(asistenciaDetalles);
-                asistencia.setEvento(evento);
+
             }
-            return Optional.of(asistencia);
-        } else {
-            return Optional.empty();
         }
+        return Optional.ofNullable(asistencia);
     }
 
     @Override

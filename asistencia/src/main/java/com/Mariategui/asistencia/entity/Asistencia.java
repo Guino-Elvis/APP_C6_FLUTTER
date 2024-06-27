@@ -21,7 +21,8 @@ public class Asistencia {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private Evento evento;
 
-    @OneToMany(mappedBy = "asistencia", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "asistencia_id")
     private List<AsistenciaDetalle> detalle;
 }

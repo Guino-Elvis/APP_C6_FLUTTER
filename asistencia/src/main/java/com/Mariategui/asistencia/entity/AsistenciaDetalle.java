@@ -20,7 +20,4 @@ public class AsistenciaDetalle {
 
     private String status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "asistencia_id")
-    private Asistencia asistencia;
 }
