@@ -27,6 +27,8 @@ class _EditEventoState extends State<EditEvento> {
   late TextEditingController controllerid;
   late TextEditingController controlleruserId;
   late TextEditingController controllernombre;
+  late TextEditingController controllerseccion;
+  late TextEditingController controllertipo;
   late TextEditingController controllerfecha_inicio;
   late TextEditingController controllerfecha_fin;
   File? selectedImage;
@@ -44,6 +46,11 @@ class _EditEventoState extends State<EditEvento> {
 
     controllernombre = TextEditingController(
         text: widget.list[widget.index]['nombre']?.toString() ?? '');
+
+    controllerseccion = TextEditingController(
+        text: widget.list[widget.index]['seccion']?.toString() ?? '');
+    
+    selectedTipo = widget.list[widget.index]['tipo']?.toString() ?? "";
 
     controllerfecha_inicio = TextEditingController(
         text: widget.list[widget.index]['fecha_inicio']?.toString() ?? '');
@@ -98,6 +105,8 @@ class _EditEventoState extends State<EditEvento> {
       id: int.parse(eventoId),
       userId: controlleruserId.text.trim(),
       nombre: eventoTitle,
+      seccion: controllerseccion.text.trim(),
+      tipo: selectedTipo ?? "",
       fecha_inicio: controllerfecha_inicio.text.trim(),
       fecha_fin: controllerfecha_fin.text.trim(),
       foto: newImageUrl,
@@ -107,6 +116,8 @@ class _EditEventoState extends State<EditEvento> {
       id: eventoId,
       userId: controlleruserId.text.trim(),
       nombre: eventoTitle,
+      seccion: controllerseccion.text.trim(),
+      tipo:selectedTipo ?? "", // Rol seleccionado
       fecha_inicio: controllerfecha_inicio.text.trim(),
       fecha_fin: controllerfecha_fin.text.trim(),
       foto: newImageUrl,
@@ -126,6 +137,9 @@ class _EditEventoState extends State<EditEvento> {
     }
   }
 
+  String?
+      selectedTipo; // Debes definir esta variable para almacenar el rol seleccionado
+  List<String> tipos = ['publico', 'privado'];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -211,7 +225,47 @@ class _EditEventoState extends State<EditEvento> {
                     ),
                   ),
                 ),
-               
+               ListTile(
+                  leading: Icon(Icons.person, color: Colors.black),
+                  title: TextFormField(
+                    controller: controllerseccion,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "El campo no puede estar vacío";
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      hintText: "Seccion",
+                      labelText: "Seccion para la vista del alumno",
+                    ),
+                  ),
+                ),
+                 Container(
+                      margin: EdgeInsets.only(
+                          left: 16.0,
+                          right:
+                              20.0), // Margen izquierdo para alinear visualmente con los otros campos
+                      child: DropdownButtonFormField<String>(
+                        value: selectedTipo,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedTipo = newValue;
+                          });
+                        },
+                        items: tipos.map((String tipo) {
+                          return DropdownMenuItem<String>(
+                            value: tipo,
+                            child: Text(tipo),
+                          );
+                        }).toList(),
+                        decoration: InputDecoration(
+                          labelText: 'Tipo',
+                          hintText: 'Selecciona un Tipo para el evento',
+                          icon: Icon(Icons.category_outlined),
+                        ),
+                      ),
+                    ),
                 ListTile(
                   leading: Icon(Icons.timer, color: Colors.black),
                   title: TextFormField(

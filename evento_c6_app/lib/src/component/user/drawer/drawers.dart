@@ -98,10 +98,10 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget> {
                   if (accountRole == 'user') ...[
 
                     buildMenuItem(
-                      text: 'Libros',
+                      text: 'Eventos',
                       icon: CupertinoIcons.book,
                       onTap: () {
-                        Navigator.of(context).pushNamed('/librohome');
+                        Navigator.of(context).pushNamed('/evento-alumno');
                       },
                     ),
                      const SizedBox(height: 16),

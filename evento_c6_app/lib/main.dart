@@ -4,6 +4,7 @@ import 'package:evento_c6_app/src/pages/auth/LoginPage.dart';
 import 'package:evento_c6_app/src/pages/auth/RegisterPage.dart';
 import 'package:evento_c6_app/src/pages/cruds/evento/EventoList.dart';
 import 'package:evento_c6_app/src/pages/cruds/usuario/UsuarioList.dart';
+import 'package:evento_c6_app/src/pages/inicio_evento.dart';
 import 'package:evento_c6_app/src/service/authService/ShareApiTokenService.dart';
 import 'package:evento_c6_app/src/view/AdminHomePage.dart';
 import 'package:evento_c6_app/src/view/HomePage.dart';
@@ -79,6 +80,8 @@ class MyApp extends StatelessWidget {
         '/user_home': (context) => UserHomePage(),
         '/usuario': (context) => const UsuarioList(),
         '/evento': (context) => const EventoList(),
+        //VISTA_ALUMNO
+        '/evento-alumno': (context) =>  InicioEvento(),
 
       },
       // home: CategoriaList(),

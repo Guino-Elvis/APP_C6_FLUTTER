@@ -15,6 +15,12 @@ public class AsistenciaController {
     @Autowired
     private AsistenciaService asistenciaService;
 
+    @GetMapping("/asistenciaPorEvento/{idEvento}")
+    public ResponseEntity<List<Asistencia>> listarAsistenciasPorEvento(@PathVariable Integer idEvento) {
+        List<Asistencia> asistencias = asistenciaService.listarPorEvento(idEvento);
+        return ResponseEntity.ok(asistencias);
+    }
+
     @GetMapping()
     public ResponseEntity<List<Asistencia>> list() {
         return ResponseEntity.ok().body(asistenciaService.listar());

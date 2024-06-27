@@ -15,4 +15,7 @@ public interface AsistenciaService {
     public Optional<Asistencia> listarPorId(Integer id);
 
     public void eliminarPorId(Integer id);
+
+    // Otros métodos existentes
+    List<Asistencia> listarPorEvento(Integer idEvento);
 }

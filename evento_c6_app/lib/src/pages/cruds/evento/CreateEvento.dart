@@ -19,6 +19,8 @@ class _CreateEventoState extends State<CreateEvento> {
   EventoController eventoController = EventoController();
   final TextEditingController userIdController = TextEditingController();
   final TextEditingController nombreController = TextEditingController();
+  final TextEditingController seccionController = TextEditingController();
+  final TextEditingController tipoController = TextEditingController();
   final TextEditingController fecha_inicioController = TextEditingController();
   final TextEditingController fecha_finController = TextEditingController();
 
@@ -77,6 +79,9 @@ class _CreateEventoState extends State<CreateEvento> {
   bool _validateFields() {
     if (userIdController.text.isEmpty ||
         nombreController.text.isEmpty ||
+        seccionController.text.isEmpty ||
+        selectedTipo == null ||
+        selectedTipo!.isEmpty ||
         fecha_inicioController.text.isEmpty ||
         fecha_finController.text.isEmpty) {
       // Show a modal indicating that all fields must be filled.
@@ -103,6 +108,12 @@ class _CreateEventoState extends State<CreateEvento> {
     return true;
   }
 
+  String?
+      selectedTipo; // Debes definir esta variable para almacenar el rol seleccionado
+  List<String> tipos = [
+    'publico',
+    'privado',
+  ]; // Definir la lista de roles
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,6 +143,36 @@ class _CreateEventoState extends State<CreateEvento> {
                     labelText: 'Nombre',
                     hintText: 'Nombre del Evento',
                     icon: Icon(Icons.person_add),
+                  ),
+                ),
+                 SizedBox(height: 16.0),
+                TextFormField(
+                  controller: seccionController,
+                  decoration: InputDecoration(
+                    labelText: 'Seccion',
+                    hintText: 'Seccion del Evento',
+                    icon: Icon(Icons.person_add),
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                  DropdownButtonFormField<String>(
+                  value: selectedTipo,
+                  onChanged: (String? newValue) {
+                    // Aquí puedes manejar el cambio de valor seleccionado
+                    setState(() {
+                      selectedTipo = newValue;
+                    });
+                  },
+                  items: tipos.map((String tipo) {
+                    return DropdownMenuItem<String>(
+                      value: tipo,
+                      child: Text(tipo),
+                    );
+                  }).toList(),
+                  decoration: InputDecoration(
+                    labelText: 'Tipo',
+                    hintText: 'Selecciona un Tipo para el evento',
+                    icon: Icon(Icons.category_outlined),
                   ),
                 ),
                 SizedBox(height: 16.0),
@@ -199,6 +240,8 @@ class _CreateEventoState extends State<CreateEvento> {
                         await eventoController.crearEvento(
                           userIdController.text.trim(),
                           nombreController.text.trim(), // Nombre
+                          seccionController.text.trim(), // Nombre
+                          selectedTipo ?? "",
                           fecha_inicioController.text.trim(), // Contraseña
                           fecha_finController.text.trim(), // Código
                           downloadUrl ?? "", // URL de la imagen

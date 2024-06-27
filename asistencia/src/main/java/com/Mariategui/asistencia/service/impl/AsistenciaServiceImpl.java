@@ -9,7 +9,10 @@ import com.Mariategui.asistencia.entity.AsistenciaDetalle;
 import com.Mariategui.asistencia.entity.Evento;
 import com.Mariategui.asistencia.feign.AuthUserFeign;
 import com.Mariategui.asistencia.repository.AsistenciaRepository;
+import com.Mariategui.asistencia.repository.EventoRepository;
 import com.Mariategui.asistencia.service.AsistenciaService;
+
+import feign.FeignException;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,35 +47,50 @@ public class AsistenciaServiceImpl implements AsistenciaService {
 
     @Override
     public Optional<Asistencia> listarPorId(Integer id) {
-        // Cambio en la asignación de variable
         Asistencia asistencia = asistenciaRepository.findById(id).orElse(null);
-
         if (asistencia != null) {
-            // Cambio en la obtención del horario
-            Evento evento = eventoService.listarPorId(asistencia.getEvento().getId()).orElse(null);
+            System.out.println("Antes de la petición");
+            Optional<Evento> eventoOptional = eventoService.listarPorId(asistencia.getEvento().getId());
+            if (eventoOptional.isPresent()) {
+                Evento evento = eventoOptional.get();
+                asistencia.setEvento(evento);
+            }
 
-            if (evento != null) {
-                List<AsistenciaDetalle> asistenciaDetalles = asistencia.getDetalle().stream()
-                        .map(asistenciaDetalle -> {
-                            System.out.println(asistenciaDetalle.toString());
-                            System.out.println("Antes de la petición");
-                            // Cambio en la obtención del alumno
-                            AuthUser authUser = authUserFeign.listById(asistenciaDetalle.getUserId()).getBody();
-                            System.out.println("Después de la petición");
-                            System.out.println(authUser.toString());
-                            System.out.println(authUser.getName());
-                            asistenciaDetalle.setAuthUser(authUser);
-                            return asistenciaDetalle;
-                        }).collect(Collectors.toList());
-                asistencia.setDetalle(asistenciaDetalles);
-
+            try {
+                AuthUser authUser = authUserFeign.listById(asistencia.getUserId()).getBody();
+                if (authUser != null) {
+                    System.out.println("Después de la petición de AuthUser");
+                    System.out.println(authUser.toString());
+                    System.out.println(authUser.getName());
+                    asistencia.setAuthUser(authUser);
+                } else {
+                    // Manejo del caso en el que no se encuentra el usuario.
+                    System.out.println("No se encontró el usuario.");
+                    // Setea userId como null y authUser como null en la reserva.
+                    asistencia.setUserId(null);
+                    asistencia.setAuthUser(null);
+                }
+            } catch (FeignException ex) {
+                // Manejo de errores específicos de Feign
+                System.out.println("Error al llamar al servicio de autenticación: " + ex.getMessage());
+                // Setea userId como null y authUser como null en la reserva.
+                asistencia.setUserId(null);
+                asistencia.setAuthUser(null);
             }
         }
+
         return Optional.ofNullable(asistencia);
     }
 
     @Override
     public void eliminarPorId(Integer id) {
         asistenciaRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Asistencia> listarPorEvento(Integer idEvento) {
+        // Obtener la lista de Asistencias por categoría directamente desde el
+        // repositorio
+        return asistenciaRepository.findByEventoId(idEvento);
     }
 }
