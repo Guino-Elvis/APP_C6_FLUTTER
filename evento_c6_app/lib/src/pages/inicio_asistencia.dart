@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:evento_c6_app/src/config/theme.dart';
 import 'package:evento_c6_app/src/controller/AsistenciaController.dart';
+import 'package:evento_c6_app/src/pages/inicio_asistencia_detalle.dart';
+import 'package:evento_c6_app/src/pages/inicio_evento.dart';
 import 'package:evento_c6_app/src/pages/widgets/evento_vistas/evento_asistencia_detalle_Widget.dart';
 import 'package:evento_c6_app/src/pages/widgets/evento_vistas/evento_detalle_Widget.dart';
 import 'package:evento_c6_app/src/service/authService/ShareApiTokenService.dart';
@@ -10,68 +12,23 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:snippet_coder_utils/hex_color.dart';
 
-class AsistenciaAlumno extends StatefulWidget {
-  final dynamic evento;
-  const AsistenciaAlumno({super.key, required this.evento});
+class InicioAsistenciaAlumno extends StatefulWidget {
 
   @override
-  State<AsistenciaAlumno> createState() => _AsistenciaAlumnoState();
+  State<InicioAsistenciaAlumno> createState() => _InicioAsistenciaAlumnoState();
 }
 
-class _AsistenciaAlumnoState extends State<AsistenciaAlumno> {
-  bool mostrarBoton = false;
-
+class _InicioAsistenciaAlumnoState extends State<InicioAsistenciaAlumno> {
+ 
   late ThemeProvider themeProvider;
   late List<Color> themeColors;
-  DateTime? selectedDate;
-  //traendo ususario
-  String accountId = "";
-  String accountName = "";
-  String accountEmail = "";
-  String accountApellido_P = "";
-  String accountApellido_M = "";
-  String accountCodigo = "";
-  dynamic evento;
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now()
-          .add(Duration(days: 365)), // Limitar a 1 año en el futuro
-    );
-
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked; // Actualizar la fecha seleccionada
-      });
-    }
-  }
-
-  Future<void> loadUserProfile() async {
-    final loginDetails = await ShareApiTokenService.loginDetails();
-
-    if (loginDetails != null) {
-      setState(() {
-        accountId = (loginDetails.user?.id ?? "ID no encontrado").toString();
-        accountEmail = loginDetails.user?.email ?? "email no encontrado";
-        accountName = loginDetails.user?.name ?? "name no encontrado";
-        accountApellido_P =
-            loginDetails.user?.apellidoP ?? "apellidoP no encontrado";
-        accountApellido_M =
-            loginDetails.user?.apellidoM ?? "apellidoM no encontrado";
-        accountCodigo = loginDetails.user?.codigo ?? "codigo no encontrado";
-      });
-    }
-  }
+ 
 
   //end traendo ususario
   @override
   void initState() {
     super.initState();
-    loadUserProfile();
-    evento = widget.evento;
   }
 
   @override
@@ -82,62 +39,11 @@ class _AsistenciaAlumnoState extends State<AsistenciaAlumno> {
     themeColors = themeProvider.getThemeColors();
   }
 
-  Future<void> _realizarAsistencia(String nombre, String correo) async {
-    final userIdController =
-        accountId; // Reemplaza con la lógica para obtener el ID de usuario
-
-    final fechaController =
-        selectedDate?.toIso8601String() ?? DateTime.now().toIso8601String();
-
-    final dynamic evento = widget.evento;
-    final estadoController = 'Presente';
-
-    try {
-      // Verificar si el ID de usuario es válido
-      if (userIdController.isNotEmpty) {
-        // Construir el cuerpo de la reserva con la información del formulario
-        Map data = {
-          'userId': '$userIdController',
-          'fecha': '$fechaController',
-          'evento': {
-            'id': (evento is Map) ? evento['id'] : evento.toString(),
-          },
-          'estado': '$estadoController',
-        };
-        final response = await AsistenciaController().crearAsistencia(
-          userIdController,
-          fechaController,
-          evento,
-          estadoController,
-        );
-
-        if (response.statusCode == 201) {
-          print("Asistencia exitosa");
-          setState(() {
-            mostrarBoton = estadoController == 'Presente';
-          });
-        } else {
-          print(
-              "Error al realizar la asistencia. Código de estado: ${response.statusCode}");
-        }
-      } else {
-        print("ID de usuario no válido");
-      }
-    } catch (e) {
-      print("Error al realizar la asistencia: $e");
-    }
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
-    final dynamic evento = widget.evento;
-    final id = '$accountId';
-    final email = '$accountEmail';
-    final name = '$accountName';
-    final apellido_m = '$accountApellido_M';
-    final apellido_p = '$accountApellido_P';
-    final codigo = '$accountCodigo';
-
+  
     return Scaffold(
       body: Stack(
         children: [
@@ -192,14 +98,7 @@ class _AsistenciaAlumnoState extends State<AsistenciaAlumno> {
                             children: [
                               InkWell(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            EventoDetalleWidget(
-                                              evento: evento,
-                                            )),
-                                  );
+                                Navigator.of(context).pushNamed('/evento-alumno');
                                 },
                                 child: Icon(
                                   Icons.arrow_back,
@@ -252,7 +151,7 @@ class _AsistenciaAlumnoState extends State<AsistenciaAlumno> {
                           child: Column(
                             children: [
                               Text(
-                                'Asistencia',
+                                'Asistencias',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 30,
@@ -265,23 +164,7 @@ class _AsistenciaAlumnoState extends State<AsistenciaAlumno> {
                         SizedBox(
                           height: 20,
                         ),
-                        Container(
-                          padding: EdgeInsets.only(left: 25),
-                          alignment: Alignment.centerLeft,
-                          width: 170,
-                          child: Column(
-                            children: [
-                              Text(
-                                ' ${evento['nombre']} ${evento['id']}',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 17,
-                                ),
-                                textAlign: TextAlign.start,
-                              ),
-                            ],
-                          ),
-                        ),
+                      
                       ],
                     ),
                     Positioned(
@@ -327,24 +210,7 @@ class _AsistenciaAlumnoState extends State<AsistenciaAlumno> {
                               ),
                             ],
                           ),
-                          child: CachedNetworkImage(
-                            imageUrl: evento.containsKey('foto')
-                                ? evento['foto'].toString()
-                                : 'assets/nofoto.jpg',
-                            placeholder: (context, url) => Container(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator()),
-                            errorWidget: (context, url, error) => Image.asset(
-                              'assets/nofoto.jpg',
-                              height: 200,
-                              width: 138,
-                              fit: BoxFit.cover,
-                            ),
-                            fit: BoxFit.cover,
-                            height: 200,
-                            width: 138,
-                          ),
+                          child: Container(),
                         ),
                       ),
                     ),
@@ -353,18 +219,13 @@ class _AsistenciaAlumnoState extends State<AsistenciaAlumno> {
               ),
               Column(
                 children: [
+                
                   Container(
                     color:
                         themeProvider.isDiurno ? Colors.white : Colors.white10,
                     //formulario
-                    child: _formulario(),
+                    child: _crudAsistencia(),
                   ),
-                  // Container(
-                  //   color:
-                  //       themeProvider.isDiurno ? Colors.white : Colors.white10,
-                  //   //formulario
-                  //   child: _crudAsistencia(),
-                  // ),
                 ],
               )
             ],
@@ -401,123 +262,24 @@ class _AsistenciaAlumnoState extends State<AsistenciaAlumno> {
     );
   }
 
-  Widget _formulario() {
+  Widget _crudAsistencia() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _textCenter(
-            nombre:
-                'formulario', // Utiliza ':' para asignar el valor a 'titulo'
+            nombre: 'asistencias',
           ),
-          SizedBox(height: 20),
-          Text(
-            'Evento: ${evento['nombre']} (ID: ${evento['id']})',
-            style: TextStyle(
-              color: themeProvider.isDiurno ? Colors.black : Colors.white,
-            ),
+          SizedBox(
+            height: 20,
           ),
-          Text(
-            'Id usuario:$accountId',
-            style: TextStyle(
-              color: themeProvider.isDiurno ? Colors.black : Colors.white,
-            ),
-          ),
-          Text(
-            'email :$accountEmail',
-            style: TextStyle(
-              color: themeProvider.isDiurno ? Colors.black : Colors.white,
-            ),
-          ),
-          Text(
-            'nombre :$accountName',
-            style: TextStyle(
-              color: themeProvider.isDiurno ? Colors.black : Colors.white,
-            ),
-          ),
-          Text(
-            'codigo :$accountCodigo',
-            style: TextStyle(
-              color: themeProvider.isDiurno ? Colors.black : Colors.white,
-            ),
-          ),
-          SizedBox(height: 10),
-          Row(
-            children: [
-              Text(
-                'Fecha de reserva:',
-                style: TextStyle(
-                  color: themeProvider.isDiurno ? Colors.black : Colors.white,
-                ),
-              ),
-              SizedBox(width: 10),
-              InkWell(
-                onTap: () => _selectDate(context),
-                child: Text(
-                  selectedDate == null
-                      ? 'Seleccionar fecha'
-                      : DateFormat('yyyy-MM-dd').format(selectedDate!),
-                  style: TextStyle(
-                    color: themeProvider.isDiurno ? Colors.black : Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 10),
-          OutlinedButton(
-            onPressed: () {
-              _realizarAsistencia(accountName, accountEmail);
-
-              // Agrega la navegación a la otra página aquí
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => AsistenciaAlumno(
-                          evento: evento,
-                        )),
-              );
-            },
-            style: ButtonStyle(
-              shape: MaterialStateProperty.resolveWith(
-                (states) => RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              backgroundColor: MaterialStateProperty.resolveWith(
-                (states) => themeProvider.isDiurno
-                    ? HexColor("#F82249")
-                    : themeColors[0],
-              ),
-            ),
-            child: Text('Asistir', style: TextStyle(color: Colors.white)),
-          ),
+          Container(
+              padding: EdgeInsets.only(left: 5, right: 5, bottom: 15),
+              child: InicioAsistenciaAlumnoDetalle( )),
         ],
       ),
     );
   }
-
-  // Widget _crudAsistencia() {
-  //   return Container(
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.center,
-  //       children: [
-  //         _textCenter(
-  //           nombre: 'asistencias',
-  //         ),
-  //         SizedBox(
-  //           height: 20,
-  //         ),
-  //         Container(
-  //             padding: EdgeInsets.only(left: 5, right: 5, bottom: 15),
-  //             child: EventoAsistenciaDetalleWidget(
-  //               id: '',
-  //             )),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _nota() {
     return Container(

@@ -20,7 +20,7 @@ class EventoNav extends StatelessWidget {
         children: [
           InkWell(
             onTap: (){
-              Navigator.pushNamed(context, "/librohome");
+              Navigator.pushNamed(context, "/evento-alumno");
               
             },
             child: Icon(

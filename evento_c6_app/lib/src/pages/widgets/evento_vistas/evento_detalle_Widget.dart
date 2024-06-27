@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clippy_flutter/arc.dart';
 import 'package:evento_c6_app/src/config/theme.dart';
 import 'package:evento_c6_app/src/pages/widgets/evento_vistas/evento_Widget2.dart';
+import 'package:evento_c6_app/src/pages/widgets/evento_vistas/evento_asistencia_Widget.dart';
 import 'package:evento_c6_app/src/pages/widgets/navbar/evento_nav.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/cupertino.dart';
@@ -167,14 +168,14 @@ class _EventoDetalleWidgetState extends State<EventoDetalleWidget> {
                                   if (evento['tipo']?.toString() == 'publico')
                                     InkWell(
                                       onTap: () {
-                                        // Navigator.push(
-                                        //   context,
-                                        //   MaterialPageRoute(
-                                        //     builder: (context) => Reservaevento(
-                                        //       evento: evento,
-                                        //     ),
-                                        //   ),
-                                        // );
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => AsistenciaAlumno(
+                                              evento: evento,
+                                            ),
+                                          ),
+                                        );
                                       },
                                       child: Container(
                                         padding: EdgeInsets.all(5),
@@ -385,9 +386,9 @@ class _EventoDetalleWidgetState extends State<EventoDetalleWidget> {
                               ),
                             ),
                           ),
-                          Container(
-                            child: EventoWidget2(),
-                          )
+                          // Container(
+                          //   child: EventoWidget2(),
+                          // )
                         ],
                       ),
                     )

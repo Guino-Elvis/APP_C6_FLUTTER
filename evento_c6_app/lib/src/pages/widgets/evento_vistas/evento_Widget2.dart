@@ -2,6 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:evento_c6_app/src/config/theme.dart';
 import 'package:evento_c6_app/src/controller/EventoController.dart';
+import 'package:evento_c6_app/src/pages/widgets/evento_vistas/evento_detalle_Widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -111,12 +112,12 @@ class _EventoWidget2State extends State<EventoWidget2> {
                 ),
                 InkWell(
                   onTap: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => Detalle(evento: items),
-                  //   ),
-                  // );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EventoDetalleWidget(evento: items),
+                    ),
+                  );
                 },
                   child: Container(
                     margin: EdgeInsets.all(5),
